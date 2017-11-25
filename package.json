@@ -1,24 +1,23 @@
 {
-  "name": "msabot",
+  "name": "contosobot",
   "version": "1.0.0",
-  "description": "Bot for MSA",
+  "description": "Proof of Concept chat bot for Contoso Bank",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "Li Jong",
-  "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ljon567/MSAbot.git"
+    "url": "git+https://github.com/ljon567/ContosoBot.git"
   },
+  "author": "Li Jong",
+  "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ljon567/MSAbot/issues"
+    "url": "https://github.com/ljon567/ContosoBot/issues"
   },
-  "homepage": "https://github.com/ljon567/MSAbot#readme",
+  "homepage": "https://github.com/ljon567/ContosoBot#readme",
   "dependencies": {
-    "botbuilder": "^3.11.0",
-    "restify": "^6.3.2"
+    "botbuilder": "^3.12.0",
+    "restify": "^6.3.4"
   }
 }
