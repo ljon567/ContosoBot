@@ -1,0 +1,24 @@
+{
+  "name": "msabot",
+  "version": "1.0.0",
+  "description": "Bot for MSA",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Li Jong",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ljon567/MSAbot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ljon567/MSAbot/issues"
+  },
+  "homepage": "https://github.com/ljon567/MSAbot#readme",
+  "dependencies": {
+    "botbuilder": "^3.11.0",
+    "restify": "^6.3.2"
+  }
+}
