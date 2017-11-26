@@ -11,6 +11,9 @@ exports.startDialog = function (bot) {
     // Link to LUIS app
     var recognizer = new builder.LuisRecognizer('https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/734b3a52-2213-4887-a556-655bd873422e?subscription-key=64c3a8d306a14b47a6f6c38e2f4e339f&verbose=true&timezoneOffset=0&q=');
 
+    // Boolean to check if user has logged in yet or not
+    var loggedIn = true;
+
     // Connect to chat bot
     bot.recognizer(recognizer);
 
@@ -58,36 +61,12 @@ exports.startDialog = function (bot) {
     });
 
     bot.dialog('DeleteAccount', [
-        // function (session, args, next) {
-        //     session.dialogData.args = args || {};
-        //     if (!session.conversationData["username"]) {
-        //         builder.Prompts.text(session, "Enter a username to setup your account.");
-        //     } else {
-        //         next(); // Skip if we already have this info.
-        //     }
-        // },
-        function (session, results,next) {
-        if (!isAttachment(session)) {
-
-            // if (results.response) {
-            //     session.conversationData["username"] = results.response;
-            // }    
-
-            session.send("You want to delete an account");
-
-            // Pulls out the food entity from the session if it exists
-            //var foodEntity = builder.EntityRecognizer.findEntity(session.dialogData.args.intent.entities, 'food');
-
-            // Checks if the for entity was found
-            // if (foodEntity) {
-            //     session.send('Deleting \'%s\'...', foodEntity.entity);
-            //     food.deleteFavouriteFood(session,session.conversationData['username'],foodEntity.entity); //<--- CALLL WE WANT
-            // } else {
-            //     session.send("No food identified! Please try again");
-            // }
+        function (session, results, next) {
+            if (!isAttachment(session)) {   
+                session.send("Deleting account");
+                balance.deleteAccount(session, session.conversationData['accountNumber']); 
+            }
         }
-
-    }
     ]).triggerAction({
         matches: 'DeleteAccount'
     });
@@ -112,22 +91,28 @@ exports.startDialog = function (bot) {
         matches: 'GetLocation'
     });
 
-    bot.dialog('CreateAccount', 
-        function (session, args) {
-            if (!isAttachment(session)) {
-
-                // Pulls out the food entity from the session if it exists
-                //var foodEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'food');
-
-                // Checks if the for entity was found
-                // if (foodEntity) {
-                //     session.send('Calculating calories in %s...', foodEntity.entity);
-                //     nutrition.displayNutritionCards(foodEntity.entity, session);
-                // } else {
-                    session.send("You want to create an account");
-                //}
+    bot.dialog('CreateAccount', [
+        function (session, args, next) {
+            session.dialogData.args = args || {};  
+            // Not yet logged in      
+            if (!session.conversationData["accountNumber"]) {
+                loggedIn = false;
+                next();               
+            } else {
+                loggedIn = true;
+                builder.Prompts.text(session, "Enter a name to setup your account"); 
             }
-    }).triggerAction({
+        },
+        function (session, results, next) {
+            if (!isAttachment(session)) {
+                if (results.response) {
+                    session.conversationData["name"] = results.response;
+                }
+                session.send("Creating account");
+                balance.makeAccount(session, session.conversationData["name"], session.conversationData["accountNumber"], loggedIn); 
+            }
+        }
+    ]).triggerAction({
         matches: 'CreateAccount'
     });
 

@@ -7,10 +7,16 @@ exports.displayBalance = function showBalance(session, accountNumber){
     rest.showBalance(url, session, accountNumber, handleBalanceResponse)
 };
 
-// exports.sendFavouriteFood = function postFavouriteFood(session, username, favouriteFood){
-//     var url = 'https://foodbotljon567.azurewebsites.net/tables/FoodBot';
-//     rest.postFavouriteFood(url, username, favouriteFood);
-// };
+exports.makeAccount = function createAccount(session, name, accountNumber, loggedIn){
+    var url = 'http://contosobotlj.azurewebsites.net/tables/ContosoBot';
+    // Only create account if user has logged in
+    if (!loggedIn) {
+        session.send("ERROR: Not logged in")
+    } else {
+        rest.createAccount(url, name, accountNumber);
+        session.send("Account successfully created")
+    }
+};
 
 function handleBalanceResponse(message, session, accountNumber) {
     console.log("handleBalanceResponse function called");
@@ -38,27 +44,29 @@ function handleBalanceResponse(message, session, accountNumber) {
     }                
 }
 
-// exports.deleteFavouriteFood = function deleteFavouriteFood(session,username,favouriteFood){
-//     var url  = 'https://foodbotljon567.azurewebsites.net/tables/FoodBot';
+exports.deleteAccount = function deleteAccount(session, accountNumber){
+    var url  = 'http://contosobotlj.azurewebsites.net/tables/ContosoBot';
+    rest.showBalance(url, session, accountNumber, function(message, session, accountNumber){
+        var allAccounts = JSON.parse(message);
+        var found = false;
+        // Look for right account to delete
+        for(var index in allAccounts) {
+            if (allAccounts[index].accountNumber === accountNumber) {
+                found = true;
+                console.log(allAccounts[index]);
+                rest.deleteAccount(url, session, accountNumber, allAccounts[index].id, handleDeletedAccountResponse)
+            }
+        }
+        if (accountNumber === null) {
+            session.send("ERROR: Not logged in"); 
+        } else if (found === true) {
+            session.send("Account successfully deleted"); 
+        } else {
+            session.send("ERROR: No account found"); 
+        } 
+    });
+};
 
-//     rest.getFavouriteFood(url,session, username,function(message,session,username){
-//      var   allFoods = JSON.parse(message);
-
-//         for(var i in allFoods) {
-//             if (allFoods[i].favouriteFood === favouriteFood && allFoods[i].username === username) {
-//                 console.log(allFoods[i]);
-
-//                 rest.deleteFavouriteFood(url,session,username,favouriteFood, allFoods[i].id ,handleDeletedFoodResponse)
-
-//             }
-//         }
-
-
-//     });
-
-
-// };
-
-// function handleDeletedFoodResponse(body,session,username, favouriteFood){
-//     console.log('Done');
-// }
+function handleDeletedAccountResponse(body, session, accountNumber){
+    console.log('Done');
+}
