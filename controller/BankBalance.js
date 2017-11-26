@@ -30,7 +30,7 @@ exports.deposit = function depositAmount(session, accountNumber, amount) {
         if (accountNumber === null) {
             session.send("ERROR: Not logged in"); 
         } else if (found === true) {
-            session.send("Amount successfully deposited"); 
+            session.send("Transaction complete"); 
         } else {
             session.send("ERROR: No account found"); 
         } 

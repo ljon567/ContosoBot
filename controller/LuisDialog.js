@@ -159,22 +159,42 @@ exports.startDialog = function (bot) {
         matches: 'Logout'
     });
 
-    bot.dialog('Withdraw', 
-    function (session, args) {
-        if (!isAttachment(session)) {
-
-            // Pulls out the food entity from the session if it exists
-            //var foodEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'food');
-
-            // Checks if the for entity was found
-            // if (foodEntity) {
-            //     session.send('Calculating calories in %s...', foodEntity.entity);
-            //     nutrition.displayNutritionCards(foodEntity.entity, session);
-            // } else {
-                session.send("Withdrawing from your account");
-            //}
+    bot.dialog('Withdraw', [
+        function (session, args, next) {
+            session.dialogData.args = args || {};  
+            // Not yet logged in      
+            if (!session.conversationData["accountNumber"]) {
+                loggedIn = false;     
+                next();         
+            } else {
+                loggedIn = true;
+                next(); 
+            }
+        },
+        function (session, results, next) {
+            if (!isAttachment(session)) {
+                // Remove from database entry the specified amount 
+                // Extract cash entity
+                var cashEntity = builder.EntityRecognizer.findEntity(session.dialogData.args.intent.entities, 'cash');
+                // Converts amount into a negative number
+                var deduct;
+                var withdraw;
+                // Checks if cash entity was found
+                if (loggedIn) {
+                    if (cashEntity) {
+                        session.send('Withdrawing $%s from your account', cashEntity.entity);
+                        deduct = 0 - +cashEntity.entity;
+                        withdraw = '' + deduct;
+                        balance.deposit(session, session.conversationData["accountNumber"], withdraw); 
+                    } else {
+                        session.send("Please specify the amount you want to withdraw")
+                    }
+                } else {
+                    session.send("ERROR: Not logged in");
+                }             
+            }
         }
-    }).triggerAction({
+    ]).triggerAction({
         matches: 'Withdraw'
     });
 
