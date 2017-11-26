@@ -34,7 +34,7 @@ exports.showBalance = function getData(url, session, accountNumber, callback){
     });
 };
 
-exports.createAccount = function getData(url, name, accountNumber){
+exports.createAccount = function getData(url, name, accountNumber, balance){
     var options = {
         url: url,
         method: 'POST',
@@ -45,7 +45,7 @@ exports.createAccount = function getData(url, name, accountNumber){
         json: {
             "name" : name,
             "accountNumber" : accountNumber,
-            "balance" : "0"
+            "balance" : balance
         }
     };      
     request(options, function (error, response, body) {

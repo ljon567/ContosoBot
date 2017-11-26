@@ -1,19 +1,49 @@
 // Load module
 var rest = require('../API/Restclient');
 
-exports.displayBalance = function showBalance(session, accountNumber){
+exports.displayBalance = function showBalance(session, accountNumber) {
     console.log("displayBalance function called")
     var url = 'http://contosobotlj.azurewebsites.net/tables/ContosoBot';
     rest.showBalance(url, session, accountNumber, handleBalanceResponse)
 };
 
-exports.makeAccount = function createAccount(session, name, accountNumber, loggedIn){
+exports.deposit = function depositAmount(session, accountNumber, amount) {
+    var url = 'http://contosobotlj.azurewebsites.net/tables/ContosoBot';
+    rest.showBalance(url, session, accountNumber, function(message, session, accountNumber){
+        var allAccounts = JSON.parse(message);
+        var found = false;
+        var sum;
+        var name;
+        var balance;
+        // Look for right account to deposit into
+        for(var index in allAccounts) {
+            if (allAccounts[index].accountNumber === accountNumber) {
+                found = true;
+                console.log(allAccounts[index]);
+                sum = +allAccounts[index].balance + +amount;
+                balance = '' + sum;
+                name = allAccounts[index].name;
+                rest.deleteAccount(url, session, accountNumber, allAccounts[index].id, handleDeletedAccountResponse)
+                rest.createAccount(url, name, accountNumber, balance);
+            }
+        }
+        if (accountNumber === null) {
+            session.send("ERROR: Not logged in"); 
+        } else if (found === true) {
+            session.send("Amount successfully deposited"); 
+        } else {
+            session.send("ERROR: No account found"); 
+        } 
+    });
+};
+
+exports.makeAccount = function createAccount(session, name, accountNumber, balance, loggedIn) {
     var url = 'http://contosobotlj.azurewebsites.net/tables/ContosoBot';
     // Only create account if user has logged in
     if (!loggedIn) {
         session.send("ERROR: Not logged in")
     } else {
-        rest.createAccount(url, name, accountNumber);
+        rest.createAccount(url, name, accountNumber, balance);
         session.send("Account successfully created")
     }
 };

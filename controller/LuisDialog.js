@@ -29,31 +29,33 @@ exports.startDialog = function (bot) {
     });
 
     bot.dialog('Deposit', [
-        // function (session, args, next) {
-        //     session.dialogData.args = args || {};        
-        //     if (!session.conversationData["username"]) {
-        //         builder.Prompts.text(session, "Enter a username to setup your account.");                
-        //     } else {
-        //         next(); // Skip if we already have this info.
-        //     }
-        // },
+        function (session, args, next) {
+            session.dialogData.args = args || {};  
+            // Not yet logged in      
+            if (!session.conversationData["accountNumber"]) {
+                loggedIn = false;     
+                next();         
+            } else {
+                loggedIn = true;
+                next(); 
+            }
+        },
         function (session, results, next) {
             if (!isAttachment(session)) {
-
-                // if (results.response) {
-                //     session.conversationData["username"] = results.response;
-                // }
-                // Pulls out the food entity from the session if it exists
-                //var foodEntity = builder.EntityRecognizer.findEntity(session.dialogData.args.intent.entities, 'food');
-    
-                // Checks if the food entity was found
-                // if (foodEntity) {
-                //     session.send('Thanks for telling me that \'%s\' is your favourite food', foodEntity.entity);
-                //     food.sendFavouriteFood(session, session.conversationData["username"], foodEntity.entity); // <-- LINE WE WANT
-    
-                // } else {
-                    session.send("Depositing into your account");
-                //}
+                // Add to database entry the specified amount 
+                // Extract cash entity
+                var cashEntity = builder.EntityRecognizer.findEntity(session.dialogData.args.intent.entities, 'cash');
+                // Checks if cash entity was found
+                if (loggedIn) {
+                    if (cashEntity) {
+                        session.send('Depositing $%s into your account', cashEntity.entity);
+                        balance.deposit(session, session.conversationData["accountNumber"], cashEntity.entity); 
+                    } else {
+                        session.send("Please specify the amount you want to deposit")
+                    }
+                } else {
+                    session.send("ERROR: Not logged in");
+                }             
             }
         }
     ]).triggerAction({
@@ -96,8 +98,8 @@ exports.startDialog = function (bot) {
             session.dialogData.args = args || {};  
             // Not yet logged in      
             if (!session.conversationData["accountNumber"]) {
-                loggedIn = false;
-                next();               
+                loggedIn = false;  
+                next();           
             } else {
                 loggedIn = true;
                 builder.Prompts.text(session, "Enter a name to setup your account"); 
@@ -109,7 +111,7 @@ exports.startDialog = function (bot) {
                     session.conversationData["name"] = results.response;
                 }
                 session.send("Creating account");
-                balance.makeAccount(session, session.conversationData["name"], session.conversationData["accountNumber"], loggedIn); 
+                balance.makeAccount(session, session.conversationData["name"], session.conversationData["accountNumber"], "0", loggedIn); 
             }
         }
     ]).triggerAction({
