@@ -1,6 +1,6 @@
 // Load modules
 var builder = require('botbuilder');
-//var food = require('../controller/FavouriteFoods');
+var balance = require('../controller/BankBalance');
 //var restaurant = require('./RestaurantCard');
 //var nutrition = require('./NutritionCard');
 //var customVision = require('../controller/CustomVision');
@@ -15,23 +15,10 @@ exports.startDialog = function (bot) {
     bot.recognizer(recognizer);
 
     bot.dialog('ShowBalance', [
-        // function (session, args, next) {
-        //     session.dialogData.args = args || {};        
-        //     if (!session.conversationData["username"]) {
-        //         builder.Prompts.text(session, "Enter a username to setup your account.");                
-        //     } else {
-        //         next(); // Skip if we already have this info.
-        //     }
-        // },
         function (session, results, next) {
             if (!isAttachment(session)) {
-
-                // if (results.response) {
-                //     session.conversationData["username"] = results.response;
-                // }
-
                 session.send("Showing your balance");
-                //food.displayFavouriteFood(session, session.conversationData["username"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
+                balance.displayBalance(session, session.conversationData["accountNumber"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
             }
         }
     ]).triggerAction({
@@ -144,41 +131,44 @@ exports.startDialog = function (bot) {
         matches: 'CreateAccount'
     });
 
-    bot.dialog('Login', 
-    function (session, args) {
-        if (!isAttachment(session)) {
-
-            // Pulls out the food entity from the session if it exists
-            //var foodEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'food');
-
-            // Checks if the for entity was found
-            // if (foodEntity) {
-            //     session.send('Calculating calories in %s...', foodEntity.entity);
-            //     nutrition.displayNutritionCards(foodEntity.entity, session);
-            // } else {
-                session.send("Logging in...");
-            //}
+    bot.dialog('Login', [
+        function (session, args, next) {
+            session.send("Logging in...");
+            session.dialogData.args = args || {};    
+            // Acquire name and bank account number if not yet logged in    
+            if (!session.conversationData["accountNumber"]) {
+                builder.Prompts.text(session, "Enter your account number");              
+            } else {
+                session.send("A user is already logged in"); 
+                next(); 
+            }
+        },
+        function (session, results, next) {
+            if (!isAttachment(session)) { 
+                if (results.response) {
+                    session.conversationData["accountNumber"] = results.response;   
+                    session.send("Successfully logged in");               
+                }
+            } 
         }
-    }).triggerAction({
+    ]).triggerAction({
         matches: 'Login'
     });
 
     bot.dialog('Logout', 
-    function (session, args) {
-        if (!isAttachment(session)) {
-
-            // Pulls out the food entity from the session if it exists
-            //var foodEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'food');
-
-            // Checks if the for entity was found
-            // if (foodEntity) {
-            //     session.send('Calculating calories in %s...', foodEntity.entity);
-            //     nutrition.displayNutritionCards(foodEntity.entity, session);
-            // } else {
-                session.send("Logging out...");
-            //}
+        function (session, args, next) {
+            session.send("Logging out...");
+            session.dialogData.args = args || {};    
+            // Log out if not already done so    
+            if (!session.conversationData["accountNumber"]) {
+                session.send("Already logged out"); 
+                next();             
+            } else {
+                session.conversationData["accountNumber"] = null;
+                session.send("Successfully logged out"); 
+            }
         }
-    }).triggerAction({
+    ).triggerAction({
         matches: 'Logout'
     });
 
