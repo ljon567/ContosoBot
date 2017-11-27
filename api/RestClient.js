@@ -1,16 +1,17 @@
 // Load module
 var request = require('request');
 
-// exports.getNutritionData = function getData(url, session, foodName, callback){
-    
-//         request.get(url, function(err,res,body){
-//             if(err){
-//                 console.log(err);
-//             }else {
-//                 callback(body, foodName, session);
-//             }
-//         });
-//     };
+// Acquire bank location from external API
+exports.bankLocation = function getData(url, session, callback) {
+    console.log("Inside bankLocation function"); 
+    request.get(url, function(err, res, body) {
+        if(err) {
+            console.log(err);
+        } else {
+            callback(body, session);
+        }
+    });
+};
 
 // exports.getYelpData = function getData(url,bearer,session, callback){
 

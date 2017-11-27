@@ -2,7 +2,7 @@
 var builder = require('botbuilder');
 var balance = require('../controller/BankBalance');
 //var restaurant = require('./RestaurantCard');
-//var nutrition = require('./NutritionCard');
+var bank = require('../controller/locationCard');
 var customVision = require('../controller/CustomVision');
 //var qna = require('../controller/QnAMaker');
 
@@ -74,21 +74,11 @@ exports.startDialog = function (bot) {
     });
 
     bot.dialog('GetLocation', 
-        [function (session, args) {
-        
+        [function (session, args) {   
             if (!isAttachment(session)) {
-                // Pulls out the food entity from the session if it exists
-                //var foodEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'food');
-        
-                // Checks if the for entity was found
-                // if (foodEntity) {
-                //     session.send('Looking for restaurants which sell %s...', foodEntity.entity);
-                //     restaurant.displayRestaurantCards(foodEntity.entity, "auckland", session);
-                // } else {
-                    session.send("Getting bank locations");
-                //}
-            }
-        
+                session.send("Looking for banks");
+                bank.displayLocation(session);
+            }     
     }]).triggerAction({
         matches: 'GetLocation'
     });

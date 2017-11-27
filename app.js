@@ -1,3 +1,8 @@
+/*
+Author: Li Jong
+Contoso Bank Bot
+*/
+
 // Load modules
 var restify = require('restify');
 var builder = require('botbuilder');
