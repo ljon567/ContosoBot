@@ -1,14 +1,17 @@
+// For reasons unknown, the table created for this bot suddenly stopped working. 
+// In order to get around this problem, the table created for the lectures is being used instead.
+
 // Load module
 var rest = require('../API/Restclient');
 
 exports.displayBalance = function showBalance(session, accountNumber) {
     console.log("displayBalance function called")
-    var url = 'http://contosobotlj.azurewebsites.net/tables/ContosoBot';
+    var url = 'https://foodbotljon567.azurewebsites.net/tables/FoodBot';
     rest.showBalance(url, session, accountNumber, handleBalanceResponse)
 };
 
 exports.deposit = function depositAmount(session, accountNumber, amount) {
-    var url = 'http://contosobotlj.azurewebsites.net/tables/ContosoBot';
+    var url = 'https://foodbotljon567.azurewebsites.net/tables/FoodBot';
     rest.showBalance(url, session, accountNumber, function(message, session, accountNumber){
         var allAccounts = JSON.parse(message);
         var found = false;
@@ -38,7 +41,7 @@ exports.deposit = function depositAmount(session, accountNumber, amount) {
 };
 
 exports.makeAccount = function createAccount(session, name, accountNumber, balance, loggedIn) {
-    var url = 'http://contosobotlj.azurewebsites.net/tables/ContosoBot';
+    var url = 'https://foodbotljon567.azurewebsites.net/tables/FoodBot';
     // Only create account if user has logged in
     if (!loggedIn) {
         session.send("ERROR: Not logged in")
@@ -75,7 +78,7 @@ function handleBalanceResponse(message, session, accountNumber) {
 }
 
 exports.deleteAccount = function deleteAccount(session, accountNumber){
-    var url  = 'http://contosobotlj.azurewebsites.net/tables/ContosoBot';
+    var url  = 'https://foodbotljon567.azurewebsites.net/tables/FoodBot';
     rest.showBalance(url, session, accountNumber, function(message, session, accountNumber){
         var allAccounts = JSON.parse(message);
         var found = false;
