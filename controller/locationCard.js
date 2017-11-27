@@ -6,7 +6,7 @@ var builder = require('botbuilder');
 exports.displayLocation = function bankLocation(session){
     // For demo, country is Singapore
     var url = "	https://api.ocbc.com:8243/branch_locator/1.1?category=2&country=SG";
-    var auth = "cd56d734aa904531c42075fe961a877f";
+    var auth = "3fe2a92847a7cf0a7a820069dba636ed";
     rest.bankLocation(url, auth, session, getBankLocation);
 }
 
