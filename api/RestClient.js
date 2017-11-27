@@ -1,28 +1,27 @@
 // Load module
 var request = require('request');
 
+// exports.bankLocation = function getData(url, session, callback) {
+//     console.log("Inside bankLocation function"); 
+//     request.get(url, function(err, res, body) {
+//         if(err) {
+//             console.log(err);
+//         } else {
+//             callback(body, session);
+//         }
+//     });
+// };
+
 // Acquire bank location from external API
-exports.bankLocation = function getData(url, session, callback) {
-    console.log("Inside bankLocation function"); 
-    request.get(url, function(err, res, body) {
-        if(err) {
+exports.bankLocation = function getData(url, bearer, session, callback){
+    request.get(url, {'auth': { 'bearer': bearer}}, function(err, res, body){
+        if(err){
             console.log(err);
-        } else {
+        }else {
             callback(body, session);
         }
     });
 };
-
-// exports.getYelpData = function getData(url,bearer,session, callback){
-
-//     request.get(url,{'auth': { 'bearer': bearer}} ,function(err,res,body){
-//         if(err){
-//             console.log(err);
-//         }else {
-//             callback(body,session);
-//         }
-//     });
-// };
 
 // Display balance of specified account from database
 exports.showBalance = function getData(url, session, accountNumber, callback){
