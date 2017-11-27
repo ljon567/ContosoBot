@@ -3,7 +3,7 @@ var builder = require('botbuilder');
 var balance = require('../controller/BankBalance');
 //var restaurant = require('./RestaurantCard');
 //var nutrition = require('./NutritionCard');
-//var customVision = require('../controller/CustomVision');
+var customVision = require('../controller/CustomVision');
 //var qna = require('../controller/QnAMaker');
 
 exports.startDialog = function (bot) {
@@ -144,15 +144,17 @@ exports.startDialog = function (bot) {
 
     bot.dialog('Logout', 
         function (session, args, next) {
-            session.send("Logging out...");
-            session.dialogData.args = args || {};    
-            // Log out if not already done so    
-            if (!session.conversationData["accountNumber"]) {
-                session.send("Already logged out"); 
-                next();             
-            } else {
-                session.conversationData["accountNumber"] = null;
-                session.send("Successfully logged out"); 
+            if (!isAttachment(session)) {
+                session.send("Logging out...");
+                session.dialogData.args = args || {};    
+                // Log out if not already done so    
+                if (!session.conversationData["accountNumber"]) {
+                    session.send("Already logged out"); 
+                    next();             
+                } else {
+                    session.conversationData["accountNumber"] = null;
+                    session.send("Successfully logged out"); 
+                }
             }
         }
     ).triggerAction({
@@ -198,6 +200,16 @@ exports.startDialog = function (bot) {
         matches: 'Withdraw'
     });
 
+    bot.dialog('None', 
+    function (session, args, next) {
+        if (!isAttachment(session)) {
+            session.send("Unrecognized input");
+        }
+    }).triggerAction({
+        matches: 'None'
+    });
+
+    // Check if there is a URL link to image
     function isAttachment(session) { 
         var msg = session.message.text;
         if ((session.message.attachments && session.message.attachments.length > 0) || msg.includes("http")) {
