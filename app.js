@@ -16,8 +16,8 @@ server.listen(process.env.port || process.env.PORT || 3978, function () {
 
 // Build chat connector 
 var connector = new builder.ChatConnector({
-    appId: process.env.MICROSOFT_APP_ID,
-    appPassword: process.env.MICROSOFT_APP_PASSWORD
+    appId: "f9a0c894-16bd-407f-9a4d-6ee5b0bb91c3",
+    appPassword: "qjZLS4-:)*qyshfVLHG5580"
 });
 
 // Listen for user inputs
