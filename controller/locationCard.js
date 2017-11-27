@@ -17,7 +17,8 @@ function getBankLocation(message, session){
     var branches = JSON.parse(message);
 
     // For each bank branch, add card with branch name, address, postal code and opening hours in attachment
-    for (var index in branches.branchesAndCentresList) {
+    // Limit carousel to 7 cards
+    for (var index = 0; limit = 7, index < limit; index++) {
         var branch = branches.branchesAndCentresList[index];
         var name = branch.landmark;
         var address = branch.address;
