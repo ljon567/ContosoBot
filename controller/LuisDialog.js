@@ -10,7 +10,7 @@ var botDialog = require('../controller/chatDisplay');
 exports.startDialog = function (bot) {
     
     // Link to LUIS app
-    var recognizer = new builder.LuisRecognizer('https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/734b3a52-2213-4887-a556-655bd873422e?subscription-key=64c3a8d306a14b47a6f6c38e2f4e339f&verbose=true&timezoneOffset=0&q=');
+    var recognizer = new builder.LuisRecognizer('https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/43ff555e-e121-4144-8520-8c123f053760?subscription-key=f78edbe8f5464ef1b55a23b3ed273cc9&verbose=true&timezoneOffset=0&q=');
 
     // Boolean to check if user has logged in yet or not
     var loggedIn = true;
@@ -129,7 +129,7 @@ exports.startDialog = function (bot) {
                 next();           
             } else {
                 loggedIn = true;
-                builder.Prompts.text(session, "---"); 
+                builder.Prompts.text(session, "###"); 
             }
         },
         function (session, results, next) {
@@ -153,7 +153,7 @@ exports.startDialog = function (bot) {
             // Acquire bank account number if not yet logged in    
             if (!session.conversationData["accountNumber"]) {
                 botDialog.sendToChat("Enter your account number", session);
-                builder.Prompts.text(session, "---");              
+                builder.Prompts.text(session, "###");              
             } else {
                 botDialog.sendToChat("A user is already logged in", session); 
                 next(); 
