@@ -8,6 +8,10 @@ exports.increaseSize = function increaseSize() {
     largeFont = true;
 }
 
+exports.decreaseSize = function decreaseSize() {
+    largeFont = false;
+}
+
 exports.sendToChat = function sendToChat(message, session) {
     var attachment = [];
     if (largeFont) {

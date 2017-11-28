@@ -41,6 +41,19 @@ exports.startDialog = function (bot) {
         matches: 'IncreaseFont'
     });
 
+    bot.dialog('DecreaseFont', [
+        function (session, results, next) {
+            if (!isAttachment(session)) {
+                // Font size is now smaller
+                botDialog.decreaseSize();
+                botDialog.sendToChat("Font has decreased", session);
+            }
+        }
+    ]).triggerAction({
+        matches: 'DecreaseFont'
+    });
+
+
     bot.dialog('Deposit', [
         function (session, args, next) {
             session.dialogData.args = args || {};  
