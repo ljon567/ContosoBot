@@ -15,7 +15,6 @@ function getBankLocation(message, session){
     var attachment = [];
     // Parses JSON
     var branches = JSON.parse(message);
-
     // For each bank branch, add card with branch name, address, postal code and opening hours in attachment
     // Limit carousel to 7 cards so they can show up on Skype
     for (var index = 0; limit = 7, index < limit; index++) {

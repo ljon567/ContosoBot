@@ -34,6 +34,7 @@ exports.showBalance = function getData(url, session, accountNumber, callback){
     });
 };
 
+// Create account with post method
 exports.createAccount = function getData(url, name, accountNumber, balance){
     var options = {
         url: url,
@@ -58,6 +59,7 @@ exports.createAccount = function getData(url, name, accountNumber, balance){
     });
 };
 
+// Delete account with delete method
 exports.deleteAccount = function deleteData(url, session, accountNumber, id, callback) {
     var options = {
         url: url + "\\" + id,

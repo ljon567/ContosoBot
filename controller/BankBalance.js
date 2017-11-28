@@ -15,18 +15,21 @@ exports.deposit = function depositAmount(session, accountNumber, amount) {
     var url = 'https://foodbotljon567.azurewebsites.net/tables/FoodBot';
     rest.showBalance(url, session, accountNumber, function(message, session, accountNumber){
         var allAccounts = JSON.parse(message);
+        // Not yet found the right account
         var found = false;
         var sum;
         var name;
         var balance;
-        // Look for right account to deposit into
+        // Look for right account to deposit into or withdraw from
         for(var index in allAccounts) {
             if (allAccounts[index].accountNumber === accountNumber) {
                 found = true;
                 console.log(allAccounts[index]);
+                // Convert from string to number, calculate then back to string
                 sum = +allAccounts[index].balance + +amount;
                 balance = '' + sum;
                 name = allAccounts[index].name;
+                // Update entry on database by deleting and creating new entry with same information but new balance
                 rest.deleteAccount(url, session, accountNumber, allAccounts[index].id, handleDeletedAccountResponse)
                 rest.createAccount(url, name, accountNumber, balance);
             }
@@ -63,7 +66,7 @@ function handleBalanceResponse(message, session, accountNumber) {
         var nameReceived = BalanceResponse[index].name;
         var accountNumberReceived = BalanceResponse[index].accountNumber;
         var balanceReceived = BalanceResponse[index].balance;
-        // Convert to lower case and check if right account
+        // Check if right account
         if (accountNumber == accountNumberReceived) {
             console.log("Account found");
             userBalance = balanceReceived;

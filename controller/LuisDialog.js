@@ -18,6 +18,16 @@ exports.startDialog = function (bot) {
     // Connect to chat bot
     bot.recognizer(recognizer);
 
+    bot.dialog('HelpIntent', [
+        function (session, results, next) {
+            if (!isAttachment(session)) {
+                botDialog.sendToChat("Hi, I'm a chat bot working for the Contoso Bank!\n\nType 'login' to login to the system\n\nType 'menu' to access the menu\n\nType 'increase font' to increase the font of my replies", session);
+            }
+        }
+    ]).triggerAction({
+        matches: 'HelpIntent'
+    });
+
     bot.dialog('ShowBalance', [
         function (session, results, next) {
             if (!isAttachment(session)) {
@@ -113,7 +123,7 @@ exports.startDialog = function (bot) {
         function (session, args, next) {
             botDialog.sendToChat("Enter a name to setup your account", session);
             session.dialogData.args = args || {};  
-            // Not yet logged in      
+            // Can only set up account when logged in      
             if (!session.conversationData["accountNumber"]) {
                 loggedIn = false;  
                 next();           
@@ -128,6 +138,7 @@ exports.startDialog = function (bot) {
                     session.conversationData["name"] = results.response;
                 }
                 botDialog.sendToChat("Creating account", session);
+                // All new accounts start out with a balance of zero
                 balance.makeAccount(session, session.conversationData["name"], session.conversationData["accountNumber"], "0", loggedIn); 
             }
         }
@@ -139,7 +150,7 @@ exports.startDialog = function (bot) {
         function (session, args, next) {
             botDialog.sendToChat("Logging in...", session);
             session.dialogData.args = args || {};    
-            // Acquire name and bank account number if not yet logged in    
+            // Acquire bank account number if not yet logged in    
             if (!session.conversationData["accountNumber"]) {
                 botDialog.sendToChat("Enter your account number", session);
                 builder.Prompts.text(session, "---");              
@@ -196,7 +207,7 @@ exports.startDialog = function (bot) {
                 // Remove from database entry the specified amount 
                 // Extract cash entity
                 var cashEntity = builder.EntityRecognizer.findEntity(session.dialogData.args.intent.entities, 'cash');
-                // Converts amount into a negative number
+                // Converts cash entity into a negative number then back to string
                 var deduct;
                 var withdraw;
                 // Checks if cash entity was found
@@ -205,6 +216,7 @@ exports.startDialog = function (bot) {
                         botDialog.sendToChat('Withdrawing $' + cashEntity.entity + ' from your account', session);
                         deduct = 0 - +cashEntity.entity;
                         withdraw = '' + deduct;
+                        // Deposit negative amount
                         balance.deposit(session, session.conversationData["accountNumber"], withdraw); 
                     } else {
                         botDialog.sendToChat("Please specify the amount you want to withdraw", session);
@@ -225,6 +237,34 @@ exports.startDialog = function (bot) {
         }
     }).triggerAction({
         matches: 'None'
+    });
+
+    bot.dialog('Menu', 
+    function (session, args, next) {
+        if (!isAttachment(session)) {
+            var attachment = [];   
+            var card = new builder.HeroCard(session)
+                .title("Do you want to:")
+                .buttons([
+                    builder.CardAction.imBack(session, 'Help', 'Ask for help'),
+                    builder.CardAction.imBack(session, 'Login', 'Login'),
+                    builder.CardAction.imBack(session, 'Logout', 'Logout'),
+                    builder.CardAction.imBack(session, 'Create Account', 'Create an account'),
+                    builder.CardAction.imBack(session, 'Balance', 'See your balance'), 
+                    builder.CardAction.imBack(session, 'Bank Location', 'Know branch locations'), 
+                    builder.CardAction.imBack(session, 'Increase Font', 'Increase my font'),
+                    builder.CardAction.imBack(session, 'Decrease Font', 'Decrease my font'),            
+                    builder.CardAction.imBack(session, 'Delete Account', 'Delete your account')
+                ]);
+            attachment.push(card);     
+            // Display in carousel 
+            var message = new builder.Message(session)
+                .attachmentLayout(builder.AttachmentLayout.carousel)
+                .attachments(attachment);
+            session.send(message);
+        }
+    }).triggerAction({
+        matches: 'Menu'
     });
 
     // Check if there is a URL link to image
