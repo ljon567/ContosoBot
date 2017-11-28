@@ -129,7 +129,7 @@ exports.startDialog = function (bot) {
                 next();           
             } else {
                 loggedIn = true;
-                builder.Prompts.text(session, "###"); 
+                builder.Prompts.text(session, "---"); 
             }
         },
         function (session, results, next) {
@@ -153,7 +153,7 @@ exports.startDialog = function (bot) {
             // Acquire bank account number if not yet logged in    
             if (!session.conversationData["accountNumber"]) {
                 botDialog.sendToChat("Enter your account number", session);
-                builder.Prompts.text(session, "###");              
+                builder.Prompts.text(session, "---");              
             } else {
                 botDialog.sendToChat("A user is already logged in", session); 
                 next(); 
