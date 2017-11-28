@@ -1,8 +1,9 @@
 // For reasons unknown, the table created for this bot suddenly stopped working. 
 // In order to get around this problem, the table created for the lectures is being used instead.
 
-// Load module
+// Load modules
 var rest = require('../API/Restclient');
+var botDialog = require('../controller/chatDisplay');
 
 exports.displayBalance = function showBalance(session, accountNumber) {
     console.log("displayBalance function called")
@@ -31,11 +32,11 @@ exports.deposit = function depositAmount(session, accountNumber, amount) {
             }
         }
         if (accountNumber === null) {
-            session.send("ERROR: Not logged in"); 
+            botDialog.sendToChat("ERROR: Not logged in", session); 
         } else if (found === true) {
-            session.send("Transaction complete"); 
+            botDialog.sendToChat("Transaction complete", session); 
         } else {
-            session.send("ERROR: No account found"); 
+            botDialog.sendToChat("ERROR: No account found", session); 
         } 
     });
 };
@@ -44,10 +45,10 @@ exports.makeAccount = function createAccount(session, name, accountNumber, balan
     var url = 'https://foodbotljon567.azurewebsites.net/tables/FoodBot';
     // Only create account if user has logged in
     if (!loggedIn) {
-        session.send("ERROR: Not logged in")
+        botDialog.sendToChat("ERROR: Not logged in", session)
     } else {
         rest.createAccount(url, name, accountNumber, balance);
-        session.send("Account successfully created")
+        botDialog.sendToChat("Account successfully created", session)
     }
 };
 
@@ -71,9 +72,9 @@ function handleBalanceResponse(message, session, accountNumber) {
     }
     // Print balance
     if (userBalance === null) {
-        session.send("ERROR: No account found"); 
+        botDialog.sendToChat("ERROR: No account found", session); 
     } else {
-        session.send("%s, your current bank balance is: $%s", name, userBalance); 
+        botDialog.sendToChat(name + ", your current bank balance is: $" + userBalance, session); 
     }                
 }
 
@@ -91,11 +92,11 @@ exports.deleteAccount = function deleteAccount(session, accountNumber){
             }
         }
         if (accountNumber === null) {
-            session.send("ERROR: Not logged in"); 
+            botDialog.sendToChat("ERROR: Not logged in", session); 
         } else if (found === true) {
-            session.send("Account successfully deleted"); 
+            botDialog.sendToChat("Account successfully deleted", session); 
         } else {
-            session.send("ERROR: No account found"); 
+            botDialog.sendToChat("ERROR: No account found", session); 
         } 
     });
 };

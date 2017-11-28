@@ -7,6 +7,7 @@ Contoso Bank Bot
 var restify = require('restify');
 var builder = require('botbuilder');
 var luis = require('./controller/LuisDialog');
+var botDialog = require('./controller/chatDisplay');
 
 // Setup Restify server
 var server = restify.createServer();
@@ -25,7 +26,7 @@ server.post('/api/messages', connector.listen());
 
 // Build chat bot and set default message if unrecognized input received
 var bot = new builder.UniversalBot(connector, function (session) {
-    session.send('Sorry, I did not understand \'%s\'. Type \'help\' if you need assistance.', session.message.text);
+    botDialog.sendToChat('Sorry, I did not understand ' + session.message.text + '. Type \'help\' if you need assistance.', session);
 });
 
 // Start LUIS functionality

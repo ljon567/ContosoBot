@@ -4,6 +4,7 @@ var balance = require('../controller/BankBalance');
 //var restaurant = require('./RestaurantCard');
 var bank = require('../controller/locationCard');
 var customVision = require('../controller/CustomVision');
+var botDialog = require('../controller/chatDisplay');
 //var qna = require('../controller/QnAMaker');
 
 exports.startDialog = function (bot) {
@@ -20,12 +21,24 @@ exports.startDialog = function (bot) {
     bot.dialog('ShowBalance', [
         function (session, results, next) {
             if (!isAttachment(session)) {
-                session.send("Showing your balance");
-                balance.displayBalance(session, session.conversationData["accountNumber"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
+                botDialog.sendToChat("Showing your balance", session);
+                balance.displayBalance(session, session.conversationData["accountNumber"]);  
             }
         }
     ]).triggerAction({
         matches: 'ShowBalance'
+    });
+
+    bot.dialog('IncreaseFont', [
+        function (session, results, next) {
+            if (!isAttachment(session)) {
+                // Font size is now bigger
+                botDialog.increaseSize();
+                botDialog.sendToChat("Font has increased", session);
+            }
+        }
+    ]).triggerAction({
+        matches: 'IncreaseFont'
     });
 
     bot.dialog('Deposit', [
@@ -48,13 +61,13 @@ exports.startDialog = function (bot) {
                 // Checks if cash entity was found
                 if (loggedIn) {
                     if (cashEntity) {
-                        session.send('Depositing $%s into your account', cashEntity.entity);
+                        botDialog.sendToChat('Depositing $' + cashEntity.entity + ' into your account', session);
                         balance.deposit(session, session.conversationData["accountNumber"], cashEntity.entity); 
                     } else {
-                        session.send("Please specify the amount you want to deposit")
+                        botDialog.sendToChat("Please specify the amount you want to deposit", session);
                     }
                 } else {
-                    session.send("ERROR: Not logged in");
+                    botDialog.sendToChat("ERROR: Not logged in", session);
                 }             
             }
         }
@@ -65,7 +78,7 @@ exports.startDialog = function (bot) {
     bot.dialog('DeleteAccount', [
         function (session, results, next) {
             if (!isAttachment(session)) {   
-                session.send("Deleting account");
+                botDialog.sendToChat("Deleting account", session);
                 balance.deleteAccount(session, session.conversationData['accountNumber']); 
             }
         }
@@ -76,7 +89,7 @@ exports.startDialog = function (bot) {
     bot.dialog('GetLocation', 
         [function (session, args) {   
             if (!isAttachment(session)) {
-                session.send("Looking for banks");
+                botDialog.sendToChat("Looking for banks", session);
                 bank.displayLocation(session);
             }     
     }]).triggerAction({
@@ -85,6 +98,7 @@ exports.startDialog = function (bot) {
 
     bot.dialog('CreateAccount', [
         function (session, args, next) {
+            botDialog.sendToChat("Enter a name to setup your account", session);
             session.dialogData.args = args || {};  
             // Not yet logged in      
             if (!session.conversationData["accountNumber"]) {
@@ -92,7 +106,7 @@ exports.startDialog = function (bot) {
                 next();           
             } else {
                 loggedIn = true;
-                builder.Prompts.text(session, "Enter a name to setup your account"); 
+                builder.Prompts.text(session, "---"); 
             }
         },
         function (session, results, next) {
@@ -100,7 +114,7 @@ exports.startDialog = function (bot) {
                 if (results.response) {
                     session.conversationData["name"] = results.response;
                 }
-                session.send("Creating account");
+                botDialog.sendToChat("Creating account", session);
                 balance.makeAccount(session, session.conversationData["name"], session.conversationData["accountNumber"], "0", loggedIn); 
             }
         }
@@ -110,13 +124,14 @@ exports.startDialog = function (bot) {
 
     bot.dialog('Login', [
         function (session, args, next) {
-            session.send("Logging in...");
+            botDialog.sendToChat("Logging in...", session);
             session.dialogData.args = args || {};    
             // Acquire name and bank account number if not yet logged in    
             if (!session.conversationData["accountNumber"]) {
-                builder.Prompts.text(session, "Enter your account number");              
+                botDialog.sendToChat("Enter your account number", session);
+                builder.Prompts.text(session, "---");              
             } else {
-                session.send("A user is already logged in"); 
+                botDialog.sendToChat("A user is already logged in", session); 
                 next(); 
             }
         },
@@ -124,7 +139,7 @@ exports.startDialog = function (bot) {
             if (!isAttachment(session)) { 
                 if (results.response) {
                     session.conversationData["accountNumber"] = results.response;   
-                    session.send("Successfully logged in");               
+                    botDialog.sendToChat("Successfully logged in", session);               
                 }
             } 
         }
@@ -135,15 +150,15 @@ exports.startDialog = function (bot) {
     bot.dialog('Logout', 
         function (session, args, next) {
             if (!isAttachment(session)) {
-                session.send("Logging out...");
+                botDialog.sendToChat("Logging out...", session);
                 session.dialogData.args = args || {};    
                 // Log out if not already done so    
                 if (!session.conversationData["accountNumber"]) {
-                    session.send("Already logged out"); 
+                    botDialog.sendToChat("Already logged out", session); 
                     next();             
                 } else {
                     session.conversationData["accountNumber"] = null;
-                    session.send("Successfully logged out"); 
+                    botDialog.sendToChat("Successfully logged out", session); 
                 }
             }
         }
@@ -174,15 +189,15 @@ exports.startDialog = function (bot) {
                 // Checks if cash entity was found
                 if (loggedIn) {
                     if (cashEntity) {
-                        session.send('Withdrawing $%s from your account', cashEntity.entity);
+                        botDialog.sendToChat('Withdrawing $' + cashEntity.entity + ' from your account', session);
                         deduct = 0 - +cashEntity.entity;
                         withdraw = '' + deduct;
                         balance.deposit(session, session.conversationData["accountNumber"], withdraw); 
                     } else {
-                        session.send("Please specify the amount you want to withdraw")
+                        botDialog.sendToChat("Please specify the amount you want to withdraw", session);
                     }
                 } else {
-                    session.send("ERROR: Not logged in");
+                    botDialog.sendToChat("ERROR: Not logged in", session);
                 }             
             }
         }
@@ -193,7 +208,7 @@ exports.startDialog = function (bot) {
     bot.dialog('None', 
     function (session, args, next) {
         if (!isAttachment(session)) {
-            session.send("Unrecognized input");
+            botDialog.sendToChat("Unrecognized input", session);
         }
     }).triggerAction({
         matches: 'None'

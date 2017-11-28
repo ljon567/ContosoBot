@@ -17,23 +17,21 @@ function getBankLocation(message, session){
     var branches = JSON.parse(message);
 
     // For each bank branch, add card with branch name, address, postal code and opening hours in attachment
-    // Limit carousel to 7 cards
+    // Limit carousel to 7 cards so they can show up on Skype
     for (var index = 0; limit = 7, index < limit; index++) {
         var branch = branches.branchesAndCentresList[index];
         var name = branch.landmark;
         var address = branch.address;
         var postalCode = branch.postalCode;
         var hours = branch.openingHours;
-
+        // Create card with information
         var card = new builder.HeroCard(session)
             .title(name)
             .subtitle(hours)
             .text(address + '\n\n' + postalCode)
         attachment.push(card);
-
     }
-
-    //Displays bank branch hero card carousel 
+    // Display bank branch hero card carousel 
     var message = new builder.Message(session)
         .attachmentLayout(builder.AttachmentLayout.carousel)
         .attachments(attachment);

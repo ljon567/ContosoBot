@@ -1,5 +1,6 @@
-// Load module
+// Load modules
 var request = require('request'); 
+var botDialog = require('../controller/chatDisplay');
 
 // Connect to Custom Vision prediction API
 exports.retrieveMessage = function (session){
@@ -13,7 +14,7 @@ exports.retrieveMessage = function (session){
         body: { 'Url': session.message.text }
     }, function(error, response, body){
         console.log(validResponse(body));
-        session.send(validResponse(body));
+        botDialog.sendToChat(validResponse(body), session);
     });
 }
 
