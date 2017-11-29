@@ -21,7 +21,7 @@ exports.startDialog = function (bot) {
     bot.dialog('HelpIntent', [
         function (session, results, next) {
             if (!isAttachment(session)) {
-                botDialog.sendToChat("Hi, I'm a chat bot working for the Contoso Bank!\n\nType 'login' to login to the system\n\nType 'menu' to access the menu\n\nType 'increase font' to increase the font of my replies", session);
+                botDialog.sendToChat("Hi, I'm a chat bot working for the Contoso Bank! Type 'menu' for a list of options", session);
             }
         }
     ]).triggerAction({
