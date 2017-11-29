@@ -128,8 +128,7 @@ exports.startDialog = function (bot) {
                 next();           
             } else {
                 loggedIn = true;
-                builder.Prompts.text(session, "**Please ensure you input your credentials privately**"); 
-                botDialog.sendToChat("Enter a name to setup your account", session);
+                builder.Prompts.text(session, "**Enter a name to setup your account**"); 
             }
         },
         function (session, results, next) {
@@ -152,8 +151,7 @@ exports.startDialog = function (bot) {
             session.dialogData.args = args || {};    
             // Acquire bank account number if not yet logged in    
             if (!session.conversationData["accountNumber"]) {
-                builder.Prompts.text(session, "**Please ensure you input your credentials privately**");    
-                botDialog.sendToChat("Enter your account number", session);          
+                builder.Prompts.text(session, "**Enter your account number**");            
             } else {
                 botDialog.sendToChat("A user is already logged in", session); 
                 next(); 
