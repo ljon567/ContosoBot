@@ -121,7 +121,6 @@ exports.startDialog = function (bot) {
 
     bot.dialog('CreateAccount', [
         function (session, args, next) {
-            botDialog.sendToChat("Enter a name to setup your account", session);
             session.dialogData.args = args || {};  
             // Can only set up account when logged in      
             if (!session.conversationData["accountNumber"]) {
@@ -130,6 +129,7 @@ exports.startDialog = function (bot) {
             } else {
                 loggedIn = true;
                 builder.Prompts.text(session, "**Please ensure you input your credentials privately**"); 
+                botDialog.sendToChat("Enter a name to setup your account", session);
             }
         },
         function (session, results, next) {
@@ -152,8 +152,8 @@ exports.startDialog = function (bot) {
             session.dialogData.args = args || {};    
             // Acquire bank account number if not yet logged in    
             if (!session.conversationData["accountNumber"]) {
-                botDialog.sendToChat("Enter your account number", session);
-                builder.Prompts.text(session, "**Please ensure you input your credentials privately**");              
+                builder.Prompts.text(session, "**Please ensure you input your credentials privately**");    
+                botDialog.sendToChat("Enter your account number", session);          
             } else {
                 botDialog.sendToChat("A user is already logged in", session); 
                 next(); 
