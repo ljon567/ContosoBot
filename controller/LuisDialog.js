@@ -87,7 +87,7 @@ exports.startDialog = function (bot) {
                         botDialog.sendToChat('Depositing $' + cashEntity.entity + ' into your account', session);
                         balance.deposit(session, session.conversationData["accountNumber"], cashEntity.entity); 
                     } else {
-                        botDialog.sendToChat("Please specify the amount you want to deposit", session);
+                        botDialog.sendToChat("Please specify the amount you want to deposit by typing 'deposit ##', where ## refers to the amount", session);
                     }
                 } else {
                     botDialog.sendToChat("ERROR: Not logged in", session);
@@ -129,7 +129,7 @@ exports.startDialog = function (bot) {
                 next();           
             } else {
                 loggedIn = true;
-                builder.Prompts.text(session, "---"); 
+                builder.Prompts.text(session, "**Please ensure you input your credentials privately**"); 
             }
         },
         function (session, results, next) {
@@ -153,7 +153,7 @@ exports.startDialog = function (bot) {
             // Acquire bank account number if not yet logged in    
             if (!session.conversationData["accountNumber"]) {
                 botDialog.sendToChat("Enter your account number", session);
-                builder.Prompts.text(session, "---");              
+                builder.Prompts.text(session, "**Please ensure you input your credentials privately**");              
             } else {
                 botDialog.sendToChat("A user is already logged in", session); 
                 next(); 
@@ -219,7 +219,7 @@ exports.startDialog = function (bot) {
                         // Deposit negative amount
                         balance.deposit(session, session.conversationData["accountNumber"], withdraw); 
                     } else {
-                        botDialog.sendToChat("Please specify the amount you want to withdraw", session);
+                        botDialog.sendToChat("Please specify the amount you want to withdraw by typing 'withdraw ##', where ## refers to the amount", session);
                     }
                 } else {
                     botDialog.sendToChat("ERROR: Not logged in", session);
