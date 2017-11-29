@@ -12,23 +12,13 @@ exports.decreaseSize = function decreaseSize() {
     largeFont = false;
 }
 
-// All Chat Bot replies as cards
 exports.sendToChat = function sendToChat(message, session) {
-    var attachment = [];
     if (largeFont) {
-        // Put message as large title
-        var card = new builder.HeroCard(session)
-            .title(message)
-        attachment.push(card);
+        // Put message as large text
+        var messageToSend = "**" + message + "**"
     } else {
-        // Put message as small text
-        var card = new builder.HeroCard(session)
-            .text(message)
-        attachment.push(card);
+        // Put message as normal text
+        var messageToSend = message;
     }
-    // Display in carousel 
-    var messageToSend = new builder.Message(session)
-        .attachmentLayout(builder.AttachmentLayout.carousel)
-        .attachments(attachment);
     session.send(messageToSend);
 }
